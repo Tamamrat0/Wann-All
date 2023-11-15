@@ -25,7 +25,7 @@ export const newTicket = async (req , res) =>{
     
             return `${prefix}${currentYear}${currentMonth}-0001`;
         }
-    const {subject , description , dept , codedevice , style , id} = req.body;
+    const {subject , description , dept , codedevice , style , id , select_doc} = req.body;
     const sqlRequest = new sql.Request(connection)
     const localTime = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
 
@@ -38,13 +38,14 @@ export const newTicket = async (req , res) =>{
     }else{
         runnumber = getNextRunningNumber()
     }
+    console.log(runnumber)
 
-    await sqlRequest.query(`INSERT INTO Tickets (tik_no , tik_subject , tik_typejob , tik_description , tik_to , status , tik_assets , create_by , create_date) 
-    VALUES ('${runnumber}' , '${subject}' , '${style}' , '${description}' , '${dept}' , 'open' , ${codedevice ? `'${codedevice}'` : "NULL"} , ${id} , '${localTime}')`)
+    await sqlRequest.query(`INSERT INTO Tickets (tik_no , doc_type , tik_subject , tik_typejob , tik_description , tik_to , status , tik_assets , create_by , create_date) 
+    VALUES ('${runnumber}' , '${select_doc}' , '${subject}' , '${style}' , '${description}' , '${dept}' , 'open' , ${codedevice ? `'${codedevice}'` : "NULL"} , ${id} , '${localTime}')`)
 
     const select_tik = await sqlRequest.query(`SELECT * FROM Tickets WHERE tik_no = '${runnumber}' `)
+    // console.log(select_tik.recordset)
 
-    console.log(select_tik.recordset)
     res.status(200).json(select_tik.recordset)
     
 // }catch(err){
@@ -55,8 +56,6 @@ export const newTicket = async (req , res) =>{
 
 export const getTicket = async (req , res) => {
     try{
-        console.log(`This Get Ticket`)
-        console.log(req.body)
         const {id} = req.body
         const sqlRequest = new sql.Request(connection)
 
@@ -65,7 +64,7 @@ export const getTicket = async (req , res) => {
         JOIN Employees ON Employees.user_account = UserAccount.id
         JOIN Department ON Employees.department_id = Department.id
         WHERE Employees.user_account = ${id}`)
-        console.log(select_user.recordset[0].department)
+
         let select_tik = null
         if(select_user.recordset[0].department === 'IT' || select_user.recordset[0].department === 'PE' ){
             select_tik = await sqlRequest.query(`SELECT * FROM Tickets WHERE tik_to = '${select_user.recordset[0].department}' ORDER BY id DESC`)
@@ -85,9 +84,8 @@ export const getTicket = async (req , res) => {
 }
 
 export const getAllAssets = async (req , res) =>{
-    try{
+    // try{
     const {dept} = req.body
-    console.log(dept)
     const sqlRequest = new sql.Request(connection)
 
     const select_id = await sqlRequest.query(`SELECT 
@@ -112,9 +110,9 @@ JOIN
 
     res.status(200).json(select_assets.recordset)
    }
-}catch(err){
-    res.json(404).json({ message: err.message })
-}
+// }catch(err){
+//     res.json(404).json({ message: err.message })
+// }
 }
 
 export const already_read = async (req , res) =>{
@@ -137,4 +135,52 @@ export const already_read = async (req , res) =>{
 
     const select_res = await sqlRequest.query(`SELECT * FROM Tickets WHERE id = ${idticket}`)
     res.status(200).json(select_res.recordset)
+}
+
+export const approved = async (req , res) =>{
+    const {selectapp , t_id , appdetail , id , sender , receiver } = req.body
+    // console.log(req.body)
+    let ap = null
+    const sqlRequest = new sql.Request(connection)
+    const localTime = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
+
+    if(selectapp === 'yes'){
+        ap = true
+    }else{
+        ap = false
+    }
+    console.log(ap)
+
+    if(ap){
+        await sqlRequest.query(`UPDATE Tickets SET tik_approved = '${ap}' , approved_by = ${id} , approved_date = '${localTime}' WHERE id = ${t_id}`)
+
+        await sqlRequest.query(`INSERT INTO Messages (ms_type , tik_id , sender , receiver , text , create_date) 
+        VALUES ('status' , ${t_id} , '${sender}' , ${receiver}, '${`เรื่องของคุณได้รับการอนุมัติให้แก้ไขแล้ว`}' , '${localTime}')`)
+    }else{
+        await sqlRequest.query(`UPDATE Tickets SET status = 'close' ,  tik_approved = '${ap}' , approved_by = ${id} , approved_date = '${localTime}' ,  closing_by = ${id} , closing_date = '${localTime}' WHERE id = ${t_id}`)
+
+        await sqlRequest.query(`INSERT INTO Messages (ms_type , tik_id , sender , receiver , text , create_date) 
+        VALUES ('status' , ${t_id} , '${sender}' , ${receiver}, '${`เรื่องของคุณไม่ผ่านการอนุมัติให้แก้ไข เนื่องจาก ${appdetail}`}' , '${localTime}')`)
+
+
+    }
+
+    const select_tik = await sqlRequest.query(`SELECT * FROM Tickets WHERE id = ${t_id}`)
+    
+
+    res.status(200).json(select_tik.recordset)
+    
+}
+
+export const summary = async (req , res) =>{
+    const {t_id , cause , parts , solvedetail , id} = req.body
+    const sqlRequest = new sql.Request(connection)
+    const localTime = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
+
+    await sqlRequest.query(`UPDATE Tickets SET tik_cause = '${cause}' ,  tik_solvedetail = ${solvedetail.trim() ? `'${solvedetail}'` : "NULL"} , tik_parts = ${parts.trim() ? `'${parts}'` : "NULL"} 
+    WHERE id = ${t_id}`)
+
+    const select_tik = await sqlRequest.query(`SELECT * FROM Tickets WHERE id = ${t_id}`)
+
+    res.status(200).json(select_tik.recordset)
 }

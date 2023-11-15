@@ -18,7 +18,7 @@ export default function UserList(){
     return(
         <>
         {/* RIGHT ZONE */}
-        <div className="min-w-[12%] fixed right-4 top-[135px] lg:top-[6rem] bottom-2 px-2 lg:px-4 py-2 bg-background dark:bg-dark-second rounded-md overflow-auto duration-300">
+        <div className="min-w-[12%] z-20 fixed -right-12 hover:right-0 lg:right-4 lg:hover:right-4 top-[135px] lg:top-[6rem] bottom-2 px-2 lg:px-4 py-2 bg-background dark:bg-dark-second rounded-md overflow-auto  scrollbar-hide duration-300">
             <div className="flex flex-col  w-full text-text dark:text-dark-text-color">
                 <h1 className="mt-1  font-semibold text-sm">IT ({usersall?.filter(i => i.department === 'IT').length})</h1>
                 {usersall && usersall.map((item ,index)=>(

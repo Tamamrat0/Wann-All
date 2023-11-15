@@ -12,8 +12,10 @@ import {IoIosArrowForward , IoIosClose} from "react-icons/io";
 import {MdOutlineFiberNew} from "react-icons/md";
 import {LuSearch} from "react-icons/lu";
 import axios from 'axios';
-// PATH FILE
 
+
+// PATH FILE
+import { Navigate, redirect } from "react-router-dom";
 import { Link } from 'react-router-dom';
 import {PageContext} from "../../PageContext";
 import {UserContext} from "../../UserContext";
@@ -35,6 +37,12 @@ export default function Ticket() {
     let [textsearch , setTextsearch] = useState('')
     let [results , setResults] = useState(null)
     const [assets , setAsstes] = useState(null)
+
+
+    if (!user) {
+       
+        return <Navigate  to="/" />;
+    }
 
     useEffect(()=>{
         const { darkAlgorithm , defaultAlgorithm} = theme;
@@ -85,7 +93,6 @@ useEffect(()=>{
     }
 },[textsearch])
 
-console.log(user?.department)
 
   return (
     <div className="flex flex-col lg:flex-row gap-2 lg:gap-0">

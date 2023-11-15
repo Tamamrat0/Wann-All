@@ -39,7 +39,7 @@ export default {
         'dark-warning': '#FF9F2D',
         'error': '#E92C2C',
         'dark-error': '#F74141',
-        'gray-color': '#d9dbde',
+        'gray-color': '#F0F0F0',
         'text': '#5A5B63',
         'text-color': '#5A5B63',
         'dark-text-color': '#c5c5c9',

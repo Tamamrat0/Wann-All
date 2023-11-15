@@ -6,12 +6,12 @@ import helmet from "helmet";
 import morgan from "morgan";
 import path from "path";
 import { fileURLToPath } from "url";
-// import ChatRoute from './routes/chat.js'
 import authRoutes from './routes/auth.js'
 import  userRoutes  from './routes/users.js';  
 import  permissRoutes  from './routes/permiss.js';  
 import  assetsRoutes from './routes/assets.js'
 import  ticketRoutes  from './routes/Ticket.js';  
+import  MessagesRoutes  from './routes/messages.js';  
 import cookieParser  from 'cookie-parser';
 import { Server } from "socket.io";
 
@@ -28,10 +28,11 @@ app.use(morgan("common"));
 app.use(bodyParser.json({ limit: "30mb" , extended: true}));
 app.use(bodyParser.urlencoded({limit: "30mb", extended:true}));
 app.use(cors({
+    methods: ["GET", "POST"],
     credentials: true,
     origin: process.env.URL_CLIENT,
 }));
-app.use("/assets",express.static(path.join(__dirname , 'public/assets')));
+// app.use("/assets",express.static(path.join(__dirname , 'public/assets')));
 app.use(cookieParser())
 // --------------------------------------
 
@@ -52,6 +53,7 @@ const upload = multer({ storage: storage });
 app.use('/auth',authRoutes);
 app.use('/users', userRoutes);
 app.use('/ticket', ticketRoutes)
+app.use('/message', MessagesRoutes)
 app.use('/permiss', permissRoutes);
 app.use('/assets', assetsRoutes);
 // app.use('/posts', postRoutes);
@@ -87,13 +89,14 @@ const server = app.listen(PORT, () => {
     io.emit('userOnline', onlineUsers);
 
     socket.on('newTickets',(data)=>{
-
       const deptUser = onlineUsers.filter(user => user.dept === data[0].tik_to)
       console.log(deptUser)
       deptUser.forEach(user => {
         
         io.to(user._id).emit('receiveTickets', data[0]);
     });
+
+
     })
 
     socket.on('create_room',(data)=> {

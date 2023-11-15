@@ -73,8 +73,8 @@ export default function NavBar() {
     <header className=" relative">
         {/* {contextHolder} */}
         {/* SIDE BAR */}
-      <aside className= {`px-4  duration-500 antialiased shadow-none  ${hidesidebar ? 'w-24 ' : 'w-24 lg:w-62.5 lg:mx-4' } rounded-md  fixed inset-y-0 my-2  items-center justify-between overflow-y-auto  `}>
-        <div className={`flex py-4 l  ${hidesidebar && 'g:px-4' } items-center justify-center gap-3 whitespace-nowrap text-text `}>
+      <aside className= {`px-4  duration-500 antialiased shadow-none -left-20 lg:left-0 hover:left-0 ${hidesidebar ? 'w-24 ' : 'w-24 lg:w-62.5 lg:mx-4' } rounded-md  fixed inset-y-0 my-2  items-center justify-between overflow-y-auto  `}>
+        <div className={`flex py-4 l   items-center justify-center gap-3 whitespace-nowrap text-text `}>
         <img className="h-10 w-auto bg-no-repeat bg-center" src="../src/assets/logo.png" alt="" />
         <span className={`font-semibold text-text dark:text-dark-text-color  duration-500 ${hidesidebar ? 'hidden' : 'hidden lg:flex' }`}>Wann ALLCafe</span>
         </div>
@@ -120,8 +120,8 @@ export default function NavBar() {
       {/* END SIDEBAR */}
 
       {/* NAV BAR */}
-      <main className={`${hidesidebar ? 'ml-63.5' : 'ml-63.5 lg:ml-68.5'}  duration-500 relative`}>
-      <nav className={`duration-500 fixed top-0 ${hidesidebar ? 'w-navsm' : 'w-navsm lg:w-navlg'}  my-2  py-4 px-6 bg-[hsla(0,0%,100%,80%)]  dark:bg-[#141414cb] rounded-md flex items-center justify-between backdrop-saturate-[300%] backdrop-blur-[10px]  shadow-blur z-20`}>
+      <main className={`${hidesidebar ? 'mt-5 lg:ml-[105px] mx-6' : 'ml-5 lg:ml-68.5'}  duration-500 relative`}>
+      <nav className={`duration-500 fixed top-0 ${hidesidebar ? 'w-[calc(100%-122px)]' : 'w-[calc(100%-122px)] lg:w-navlg'}  my-2  py-4 px-6 bg-[hsla(0,0%,100%,80%)]  dark:bg-[#141414cb] rounded-md flex items-center justify-between backdrop-saturate-[300%] backdrop-blur-[10px]  shadow-blur z-20`}>
        <div className="hidden lg:flex mr-4 text-text-color dark:text-dark-text-color relative">
        <a href="#" onClick={()=>setHidesidebar(()=>!hidesidebar)} className={`font-semibold ${hidesidebar && 'hidden'}`}>
        <VscListSelection className="w-5 h-5"/>
